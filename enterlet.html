@@ -1,0 +1,73 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>experiment</title>
+<script src="enterlet_files/jquery.js"></script>
+<script src="enterlet_files/jqutil.js"></script>
+<script src="enterlet_files/enterlet.js"></script>
+<style>
+@font-face {
+     font-family: Bananafont;
+     src: url('bananafont.ttf');
+}
+body {
+ background-color: #ccc;
+ font-family: Courier, monospace;
+}
+div#next {
+ color: #111;
+}
+#inst {
+  position:absolute;
+  font-size: 24px;
+  color:#ccc;
+}
+#page {
+ position:absolute;
+ margin-left: 120px;
+ margin-top: 80px;
+ margin-right: 120px;
+ margin-bottom:0px;
+ padding-left:50px;
+ padding-right:50px;
+ padding-top:40px;
+ top:0px;
+ left:0px;
+ bottom:0px;
+ right:0px;
+ word-wrap:break-word;
+
+ font-size: 18px;
+ color: #111;
+
+        border:10px #fff;
+        -moz-border-image:url("paper4.png") 10% 10% 10% 10% repeat;
+        -webkit-border-image:url("paper4.png") 10% 10% 10% 10% repeat;
+        border-image:url("paper4.png") 10% 10% 10% 10% repeat;
+
+
+}
+#bananas {
+ position: absolute;
+ bottom:20px;
+ left:100px;
+ right:100px;
+ word-wrap:break-word;
+ font-family: Bananafont;
+ font-size: 56px;
+ color: #F7E88F;
+ white-space: pre-line;
+}
+#debug {
+ font-size: 12px;
+ color: #000;
+}
+</style>
+</head>
+
+<body onload="main();" id="body">
+<div id="inst">(tell me a story)</div>
+<div id="page">
+<span id="story"></span><span id="next">_</span></div>
+<div id="bananas"></div>
+<div id="debug"><br><br><br><br><br><br>This is a Javascript game. It really doesn't work without Javascript!</div>
+</body></html>
