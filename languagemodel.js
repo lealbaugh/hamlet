@@ -8,27 +8,27 @@ var bigramsfile = "bigrams.json"
 
 function processintoArray(lines) {
 // lowercase it, get rid of apostrophes, and split by nonalphabetic characters
-	var choppedtext = lines.toLowerCase().replace(/[']/g,"").split(/[^A-z]+/); 
-	return choppedtext;
+	var text = lines.toLowerCase().replace(/[']/g,"").split(/[^A-z]+/); 
+	return text;
 }
 
-
-function makeUnigrams(choppedtext) {
+// Make unigram probabilities out of an array of words; output them to the given file.
+function makeUnigrams(text, outputfile) {
 	var dict = {};
 	var highestscore = 0;
 	// count the occurences of each word
-	for (var i = 0; i<choppedtext.length; i++) {
-		if (choppedtext[i] in dict){
-			dict[choppedtext[i]] += 1;
+	for (var i = 0; i<text.length; i++) {
+		if (text[i] in dict){
+			dict[text[i]] += 1;
 		}
 		else {
-			dict[choppedtext[i]] = 1;
+			dict[text[i]] = 1;
 		}
 	}
 	// then use that count to calculate the probability of each word
 	for (var word in dict) {
 		var count = dict[word];
-		var unlikeliness = (-1)*(Math.log(count/choppedtext.length));
+		var unlikeliness = (-1)*(Math.log(count/text.length));
 		//storing the numbers as "negative logarithmic probabilities" helps by 1) ensuring no numbers too small for floats, and 2) allowing us to add them instead of multiplying
 		dict[word] = unlikeliness;
 		if (unlikeliness > highestscore) {
@@ -37,32 +37,33 @@ function makeUnigrams(choppedtext) {
 		// dict also stores the highest unlikeliness, which can be assigned to words that aren't recognized at all
 	}
 	// and write it to the external file
-	fs.writeFile(unigramsfile, JSON.stringify(dict, null, 4), function(err) {
+	fs.writeFile(outputfile, JSON.stringify(dict, null, 4), function(err) {
 		if(err) {
 			console.log(err);
 		}
 		else {
-			console.log("Unigrams saved to "+unigramsfile);
+			console.log("Unigrams saved to "+outputfile);
 		}
 	}); 
 }
 
-function makeBigrams(choppedtext) {
+// Make bigram probabilities out of an array of words; output them to the given file.
+function makeBigrams(text, outputfile) {
 	var dict = {};
-	var prev = "scene";
+	var prev = text[0];
 	// count the occurences of each word
-	for (var i = 1; i<choppedtext.length; i++) {
+	for (var i = 1; i<text.length; i++) {
 		
 		if (!(prev in dict)) {
 			dict[prev] = {};
 		}
-		if (choppedtext[i] in dict[prev]){
-			dict[prev][choppedtext[i]] += 1;
+		if (text[i] in dict[prev]){
+			dict[prev][text[i]] += 1;
 		}
 		else {
-			dict[prev][choppedtext[i]] = 1;
+			dict[prev][text[i]] = 1;
 		}
-		prev = choppedtext[i];
+		prev = text[i];
 	}
 	for (var firstword in dict) {
 		//count up all the instances of the first word, so we can divide by it
@@ -84,12 +85,12 @@ function makeBigrams(choppedtext) {
 		}	
 	}
 	// and write 'em all out to the external file
-	fs.writeFile(bigramsfile, JSON.stringify(dict, null, 4), function(err) {
+	fs.writeFile(outputfile, JSON.stringify(dict, null, 4), function(err) {
 		if(err) {
 			console.log(err);
 		}
 		else {
-			console.log("Bigrams saved to "+bigramsfile);
+			console.log("Bigrams saved to "+outputfile);
 		}
 	}); 
 }
@@ -98,9 +99,10 @@ function makeBigrams(choppedtext) {
 
 var main = function() {
 	fs.readFile(filename,'utf8', function (err, data) {
-		console.log("file read in!");
-		var choppedtext = processintoArray(data);
-		makeBigrams(choppedtext);
+		console.log("File read in:", filename);
+		var text = processintoArray(data);
+		makeBigrams(text, bigramsfile);
+		makeUnigrams(text, unigramsfile);
 	});
 }
 
