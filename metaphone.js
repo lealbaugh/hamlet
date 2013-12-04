@@ -1,17 +1,3 @@
-//Implements simplified Metaphone based on the ruleset at http://en.wikipedia.org/wiki/Metaphone and the Micheal Kuhn modifications described in http://aspell.net/metaphone/metaphone-kuhn.txt
-
-var fs = require('fs');
-var filename = "speech.txt";
-
-
-var makeArray = function(lines){
-// lowercase it, get rid of apostrophes, and split by nonalphabetic characters
-	var choppedtext = lines.toLowerCase().replace(/[']/g,"").split(/[^A-z]+/); 
-	return choppedtext;
-}
-
-
-
 //----------METAPHONE------------------------------------
 var metaphone = function(word){
 // Drop duplicate adjacent letters, except for C.
@@ -19,7 +5,6 @@ var metaphone = function(word){
 	// So I'll disregard the 'c's and just switch the 'gg' over to 'k' at this stage.
 	word = word.replace(/gg/g, "k");
 	word = word.replace(/(.)\1/g, "\$1");
-	console.log(word);
 		
 // If the word begins with 'KN', 'GN', 'PN', 'AE', 'WR', drop the first letter.
 	if (word.match(/\bkn|\bgn|\bpn|\bae|\bwr/)) {
@@ -105,16 +90,4 @@ var metaphone = function(word){
 }
 //----------END METAPHONE--------------------------------
 
-
-var main = function() {
-	var lines = fs.readFileSync(filename,'utf8');
-	var choppedtext = makeArray(lines);
-	for (var i = 0; i<choppedtext.length; i++) {
-		choppedtext[i] = metaphone(choppedtext[i]);
-	}
-	var output = choppedtext.join(" ");
-	if (output.match(/[^bxskjtfhlmnpr0wyaeiou\s]/)) console.log("character warning!");
-	console.log(output);
-}
-
-main();
+module.exports = metaphone;

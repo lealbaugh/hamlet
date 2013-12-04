@@ -5,10 +5,12 @@ var filename = "hamlet.txt";
 var unigramsfile = "unigrams.json"
 var bigramsfile = "bigrams.json"
 
+var metaphone = require('./metaphone');
+
 
 function processintoArray(lines) {
-// lowercase it, get rid of apostrophes, and split by nonalphabetic characters
-	var text = lines.toLowerCase().replace(/[']/g,"").split(/[^A-z]+/); 
+// lowercase it, get rid of apostrophes and brackets, and split by nonalphabetic characters
+	var text = lines.toLowerCase().replace(/['\[\]]/g,"").split(/[^A-z]+/); 
 	return text;
 }
 
@@ -95,14 +97,23 @@ function makeBigrams(text, outputfile) {
 	}); 
 }
 
-
+function metaphoneText(text) {
+	metaphonedText = [];
+	for (var i = 0; i<text.length; i++) {
+			metaphonedText[i] = metaphone(text[i]);
+		}
+	return metaphonedText;
+}
 
 var main = function() {
 	fs.readFile(filename,'utf8', function (err, data) {
 		console.log("File read in:", filename);
 		var text = processintoArray(data);
+		var metaphonedText = metaphoneText(text);
 		makeBigrams(text, bigramsfile);
 		makeUnigrams(text, unigramsfile);
+		makeBigrams(metaphonedText, "meta-bigrams.json");
+		makeUnigrams(metaphonedText, "meta-unigrams.json");		
 	});
 }
 
