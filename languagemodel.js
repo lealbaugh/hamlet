@@ -104,6 +104,27 @@ function makeBigrams(text, outputfile) {
 	}); 
 }
 
+function getJSON(file, callback) {
+	fs.readFile(file, 'utf8', function (err, data) {
+		if (err) {
+			console.log("Readfile error: "+err);
+		}
+		else {
+			try {
+				var parsedData = JSON.parse(data);
+				if (callback && typeof(callback) === "function") {
+					callback();
+				}
+				return parsedData;
+			}
+			catch (ex) {
+				console.log(ex);
+			}
+		}
+	});
+}
+
+// Metaphone an entire array of words.
 function metaphoneText(text) {
 	metaphonedText = [];
 	for (var i = 0; i<text.length; i++) {
@@ -112,7 +133,7 @@ function metaphoneText(text) {
 	return metaphonedText;
 }
 
-
+// Check the probability of an phrase, as an array of words.
 function checkProbability(text, bigrams, unigrams) {
 	var prev = text[0];
 	var value = 0;
@@ -139,15 +160,26 @@ function checkProbability(text, bigrams, unigrams) {
 	else if (text.length > 0) {
 		if (prev in unigrams) {
 			value += unigrams[prev]+0.91629;
-			// "stupid backoff" is we multiply the (n-1)grams value by 0.4
+			// "stupid backoff" (Brants et al 2010) is we multiply the (n-1)grams value by 0.4
 			// aka add the neglog of 0.4, which is 0.91629
 		}
 		else {
-			value += unigrams["LEAST_COMMON_PROB"]+0.91629;
-			// and if it doesn't exist there, call it as common as the least comnon thing
+			value += unigrams["LEAST_COMMON_PROB"]+2*0.91629;
+			// and if it doesn't exist there, stupid backoff to it being as common as the least comnon thing
 		}
 	}
 	// otherwise, the value stays at 0, but then so does the text.length
+	
+	score = calculateScore(text, value);
+
+	console.log("Text: "+text.join(" ")
+		// +"\nvalue: "+value
+		+"\nscore: "+score
+		+"\n------------------")
+}
+
+
+function calculateScore(text, value) {
 	var score;
 	if (text.length < 1) {
 		score = 0;
@@ -157,11 +189,7 @@ function checkProbability(text, bigrams, unigrams) {
 		var avgValue = value/text.length //going to be somewhere between 0 and 11.2
 		score = Math.round(10*(11.5 - avgValue)*text.length);		
 	}
-	
-	console.log("Text: "+text.join(" ")
-		+"\nvalue: "+value
-		+"\nscore: "+score
-		+"\n------------------")
+	return score;
 }
 
 // ----------------------------------MAIN--------------------------------------------
@@ -169,23 +197,37 @@ var main = function() {
 	fs.readFile(filename,'utf8', function (err, data) {
 		console.log("File read in:", filename);
 		var text = processintoArray(data);
-		// var metaphonedText = metaphoneText(text);
 		makeBigrams(text, bigramsfile);
 		makeUnigrams(text, unigramsfile);
-		// makeBigrams(metaphonedText, "meta-bigrams.json");
-		// makeUnigrams(metaphonedText, "meta-unigrams.json");
-		checkProbability(processintoArray("whether tis nobler in the mind to suffer the slings and arrows of outrageous fortune"), bigrams, unigrams);
-		checkProbability(processintoArray("fourscore and seven years ago"), bigrams, unigrams);
-		checkProbability(processintoArray("strumpet"), bigrams, unigrams);
-		checkProbability(processintoArray("your orisons"), bigrams, unigrams);
-		checkProbability(processintoArray("let's all go to elsinore"), bigrams, unigrams);
-		checkProbability(processintoArray("let's all go to switzerland"), bigrams, unigrams);
-		checkProbability(processintoArray("let's all go to"), bigrams, unigrams);
-		checkProbability(processintoArray("to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be"), bigrams, unigrams);
-		checkProbability(processintoArray("call me ahab"), bigrams, unigrams);
-		checkProbability(processintoArray("call me maybe"), bigrams, unigrams);
+		for (var i=0; i<teststrings.length; i++){
+			checkProbability(processintoArray(teststrings[i]), bigrams, unigrams);
+		}
 
+		console.log("________Let's try it Metaphoned!________");
+		var metaphonedText = metaphoneText(text);
+		makeBigrams(metaphonedText, "meta-bigrams.json");
+		makeUnigrams(metaphonedText, "meta-unigrams.json");
+		for (var i=0; i<teststrings.length; i++){
+			checkProbability(metaphoneText(processintoArray(teststrings[i])), bigrams, unigrams);
+		}
 	});
 }
 
+var teststrings = ["whether tis nobler in the mind to suffer the slings and arrows of outrageous fortune",
+	"whether tis nobler in the mend to sufer the slings and arrws of outrajs fortune",
+	"fourscore and seven years ago",
+	"strumpet",
+	"your orisons",
+	"",
+	"let's all go to elsinore",
+	"let's all go to switzerland",
+	"let's all go to",
+	"to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be or not to be",
+	"call me ahab",
+	"call me maybe",
+	"call me elsinore",
+	"call me fellow"
+]
+
 main();
+
