@@ -1,0 +1,58 @@
+/*Palette: http://www.colourlovers.com/palette/806955/[slow_motion]*/
+body {
+  /*background: url($backgroundURL) $background repeat;*/
+  font-family: 'Bitter', serif; }
+
+#textarea {
+  background-color: #f8eddb;
+  font-family: 'Bitter', serif;
+  font-size: 24px;
+  color: #3e122f;
+  border: none;
+  resize: none;
+  padding: 20px;
+  bottom: 0px;
+  top: 20px;
+  border-left: 1px solid #d877b7;
+  border-right: 1px solid #d877b7;
+  border-top: 1px solid #d877b7; }
+  @media screen and (min-width: 780px) {
+    #textarea {
+      position: absolute;
+      left: 15%;
+      right: 15%; } }
+  @media screen and (max-width: 780px) {
+    #textarea {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      margin-top: 50px; } }
+  #textarea:focus {
+    outline: none; }
+
+#scorearea {
+  background-color: #f7803c;
+  color: #f8eddb;
+  font-size: 24px;
+  font-style: italic;
+  padding: 10px;
+  position: absolute;
+  right: 0px; }
+  #scorearea #score {
+    display: inline; }
+  #scorearea #bananas {
+    display: inline; }
+
+img {
+  vertical-align: -10%; }
+
+::-webkit-scrollbar {
+  width: 10px;
+  padding: 0px; }
+
+::-webkit-scrollbar-track {
+  border-radius: 10px; }
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #d877b7; }

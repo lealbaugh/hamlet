@@ -1,0 +1,93 @@
+/*Palette: http://www.colourlovers.com/palette/806955/[slow_motion]*/
+$cream: #f8eddb;
+$orange: #f7803c; 
+$dark: #3e122f;
+$light: lighten($dark,50%);
+$background: #643931;
+
+$backgroundURL: "bg.png";
+
+$desktop-wrap-width:70%;
+$mobile-wrap-width:90%;
+
+body {
+	/*background: url($backgroundURL) $background repeat;*/
+
+	font-family: 'Bitter', serif;
+}
+
+
+@mixin centerElementAtWidth($wrap-width) {
+	position: absolute;
+	left: (100% - $wrap-width)/2;
+	right: (100% - $wrap-width)/2;
+
+}
+
+#textarea {
+	background-color: $cream;
+	font-family: 'Bitter', serif;
+	font-size: 24px;
+	color: $dark;
+	
+	border: none;
+	resize: none;
+	padding: 20px;
+
+	@media screen and (min-width: 780px) {
+		@include centerElementAtWidth($desktop-wrap-width);
+		
+	}
+	@media screen and (max-width: 780px) {
+		@include centerElementAtWidth($mobile-wrap-width);
+		margin-top: 50px;
+	}
+
+	bottom: 0px;
+	top: 20px;
+
+	border-left: 1px solid $light;
+	border-right: 1px solid $light;
+	border-top: 1px solid $light;
+
+	&:focus {
+		outline: none;
+	}
+}
+
+#scorearea {
+	background-color: $orange;
+	color: $cream;
+	font-size: 24px;
+	font-style: italic;
+	padding: 10px;
+	position: absolute;
+	right: 0px;
+
+	#score {
+		display: inline;
+	}
+
+	#bananas {
+		display: inline;
+	}
+}
+
+img {
+	vertical-align:-10%;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    padding: 0px;
+}
+ 
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: $light;
+}
+

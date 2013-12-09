@@ -7,11 +7,23 @@ function init() {
 	
 	var textarea = document.createElement('textarea');
 	textarea.setAttribute("id", "textarea");
+	textarea.setAttribute("autofocus", "true");
+	// textarea.setAttribute("placeholder", "Type..");
 	document.querySelector('body').appendChild(textarea);
 
 	var scorearea = document.createElement('div');
 	scorearea.setAttribute("id", "scorearea");
 	document.querySelector('body').appendChild(scorearea);
+
+	var score = document.createElement('div');
+	score.setAttribute("id", "score");
+	score.innerHTML = "O";
+	document.querySelector('#scorearea').appendChild(score);
+
+	var bananas = document.createElement('div');
+	bananas.setAttribute("id", "bananas");
+	bananas.innerHTML = " x <img src=\"banana_icon.png\">";
+	document.querySelector('#scorearea').appendChild(bananas);
 
 
 	window.addEventListener("keypress", function(e){ 
@@ -24,7 +36,7 @@ function init() {
 
 	ws = io.connect()
 	ws.on('score', function(score){
-		document.getElementById('scorearea').innerHTML = score;
+		document.getElementById('score').innerHTML = score;
 		console.log("posted score: "+score);
 	});
 
