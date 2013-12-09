@@ -43,6 +43,26 @@ body {
   #scorearea #bananas {
     display: inline; }
 
+#copyright {
+  background-color: white;
+  font-size: 12px;
+  font-style: italic;
+  position: absolute;
+  right: -20px;
+  bottom: 28px;
+  padding: 5px 5px 0px 5px;
+  /*top right bottom left*/
+  display: block;
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -moz-border-top-right-radius: 10px;
+  -webkit-border-top-right-radius: 10px;
+  border-top-right-radius: 10px; }
+  #copyright a {
+    color: #d877b7;
+    text-decoration: none; }
+
 img {
   vertical-align: -10%; }
 

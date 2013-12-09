@@ -25,6 +25,14 @@ function init() {
 	bananas.innerHTML = " x <img src=\"banana_icon.png\">";
 	document.querySelector('#scorearea').appendChild(bananas);
 
+	var copyright = document.createElement('div');
+	copyright.setAttribute("id", "copyright");
+	copyright.innerHTML = "<a href=\"http://www.instamatique.com/lea/\">&#169; Lea 2013</a>";
+	document.querySelector('body').appendChild(copyright);
+
+
+	
+
 
 	window.addEventListener("keypress", function(e){ 
 		// if the key is return, space, or tab
