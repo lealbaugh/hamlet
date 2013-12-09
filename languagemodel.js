@@ -132,7 +132,8 @@ function checkProbability(text, bigrams, unigrams) {
 }
 
 
-function calculateScore(text, bigrams, unigrams) {
+function calculateScore(inputtext, bigrams, unigrams) {
+	var text = processintoArray(inputtext);
 	var length = text.length;
 	var score;
 	if (length < 1) {
@@ -147,20 +148,33 @@ function calculateScore(text, bigrams, unigrams) {
 	return score;
 }
 
-// ----------------------------------TEST--------------------------------------------
+// Function to lowercase incoming text, get rid of apostrophes and brackets, 
+// and split by nonalphabetic characters
 function processintoArray(lines) {
 	var text = lines.toLowerCase().replace(/['\[\]]/g,"").split(/[^A-z]+/); 
 	return text;
 }
 
+// Should only have to run this occasionally: regenerate the unigrams and bigrams
+function initBigramsAndUnigrams(filename) {
+	fs.readFile(filename,'utf8', function (err, data) {
+		console.log("File read in:", filename);
+		var text = processintoArray(data);
+		var bigrams = makeBigrams(text, "bigrams.json");
+		var unigrams = makeUnigrams(text, "unigrams.json");
+	});
+}
 
+
+
+// ----------------------------------TEST--------------------------------------------
 function test() {
 	var filename = "hamlet.txt";
 	fs.readFile(filename,'utf8', function (err, data) {
 		console.log("File read in:", filename);
 		var text = processintoArray(data);
-		var bigrams = makeBigrams(text);
-		var unigrams = makeUnigrams(text);
+		var bigrams = makeBigrams(text, "bigrams.json");
+		var unigrams = makeUnigrams(text, "unigrams.json");
 		for (var i=0; i<teststrings.length; i++){
 			var text = processintoArray(teststrings[i]);
 			var score = calculateScore(text, bigrams, unigrams);
@@ -188,11 +202,11 @@ var teststrings = ["whether tis nobler in the mind to suffer the slings and arro
 	"call me fellow"
 ]
 
+
 // ----------------------------------EXPORTS--------------------------------------------
 
 
-module.exports.makeUnigrams = makeUnigrams;
-module.exports.makeBigrams = makeBigrams;
+module.exports.init = initBigramsAndUnigrams;
 module.exports.calculateScore = calculateScore;
 
 
