@@ -1,21 +1,5 @@
-// _Hamlet Language Model_
-// ----------------------------------
+// -----------------LANGUAGE MODEL----------------------------------
 var fs = require('fs');
-var filename = "hamlet.txt";
-var unigramsfile = "unigrams.json"
-var bigramsfile = "bigrams.json"
-
-var bigrams = {};
-var unigrams = {};
-
-var metaphone = require('./metaphone');
-
-
-function processintoArray(lines) {
-// lowercase it, get rid of apostrophes and brackets, and split by nonalphabetic characters
-	var text = lines.toLowerCase().replace(/['\[\]]/g,"").split(/[^A-z]+/); 
-	return text;
-}
 
 // Make unigram probabilities out of an array of words; output them to the given file.
 function makeUnigrams(text, outputfile) {
@@ -41,17 +25,18 @@ function makeUnigrams(text, outputfile) {
 		}
 		// dict also stores the highest unlikeliness, which can be assigned to words that aren't recognized at all
 	}
-	// store it in a higher-scoped object, for now
-	unigrams = dict;
-	// and write it to the external file
-	fs.writeFile(outputfile, JSON.stringify(dict, null, 4), function(err) {
-		if(err) {
-			console.log(err);
-		}
-		else {
-			console.log("Unigrams saved to "+outputfile);
-		}
-	}); 
+	// write it to the external file, if a filename is provided
+	if (outputfile) {
+		fs.writeFile(outputfile, JSON.stringify(dict, null, 4), function(err) {
+			if(err) {
+				console.log(err);
+			}
+			else {
+				console.log("Unigrams created and saved to "+outputfile);
+			}
+		}); 	
+	}
+	return dict;
 }
 
 // Make bigram probabilities out of an array of words; output them to the given file.
@@ -91,47 +76,20 @@ function makeBigrams(text, outputfile) {
 			// we don't store the least-common prob here, because if the bigram fails, we drop down to unigrams. 
 		}	
 	}
-	// store it in a higher-scoped object, for now
-	bigrams = dict;
-	// and write 'em all out to the external file
-	fs.writeFile(outputfile, JSON.stringify(dict, null, 4), function(err) {
-		if(err) {
-			console.log(err);
-		}
-		else {
-			console.log("Bigrams saved to "+outputfile);
-		}
-	}); 
+	// and write 'em all out to the external file, if a filename is provided
+	if (outputfile){
+		fs.writeFile(outputfile, JSON.stringify(dict, null, 4), function(err) {
+			if(err) {
+				console.log(err);
+			}
+			else {
+				console.log("Bigrams created and saved to "+outputfile);
+			}
+		});
+	}
+	return dict; 
 }
 
-function getJSON(file, callback) {
-	fs.readFile(file, 'utf8', function (err, data) {
-		if (err) {
-			console.log("Readfile error: "+err);
-		}
-		else {
-			try {
-				var parsedData = JSON.parse(data);
-				if (callback && typeof(callback) === "function") {
-					callback();
-				}
-				return parsedData;
-			}
-			catch (ex) {
-				console.log(ex);
-			}
-		}
-	});
-}
-
-// Metaphone an entire array of words.
-function metaphoneText(text) {
-	metaphonedText = [];
-	for (var i = 0; i<text.length; i++) {
-			metaphonedText[i] = metaphone(text[i]);
-		}
-	return metaphonedText;
-}
 
 // Check the probability of an phrase, as an array of words.
 function checkProbability(text, bigrams, unigrams) {
@@ -170,48 +128,49 @@ function checkProbability(text, bigrams, unigrams) {
 	}
 	// otherwise, the value stays at 0, but then so does the text.length
 	
-	score = calculateScore(text, value);
-
-	console.log("Text: "+text.join(" ")
-		// +"\nvalue: "+value
-		+"\nscore: "+score
-		+"\n------------------")
+	return value;
 }
 
 
-function calculateScore(text, value) {
+function calculateScore(text, bigrams, unigrams) {
+	var length = text.length;
 	var score;
-	if (text.length < 1) {
+	if (length < 1) {
 		score = 0;
 	}
 	// longer strings with smaller "values" are worth more points
 	else {
-		var avgValue = value/text.length //going to be somewhere between 0 and 11.2
-		score = Math.round(10*(11.5 - avgValue)*text.length);		
+		var value = checkProbability(text, bigrams, unigrams);
+		var avgValue = value/length; //empirically going to be somewhere between 0 and 11.2
+		score = Math.round(10*(11.5 - avgValue)*length);		
 	}
 	return score;
 }
 
-// ----------------------------------MAIN--------------------------------------------
-var main = function() {
+// ----------------------------------TEST--------------------------------------------
+function processintoArray(lines) {
+	var text = lines.toLowerCase().replace(/['\[\]]/g,"").split(/[^A-z]+/); 
+	return text;
+}
+
+
+function test() {
+	var filename = "hamlet.txt";
 	fs.readFile(filename,'utf8', function (err, data) {
 		console.log("File read in:", filename);
 		var text = processintoArray(data);
-		makeBigrams(text, bigramsfile);
-		makeUnigrams(text, unigramsfile);
+		var bigrams = makeBigrams(text);
+		var unigrams = makeUnigrams(text);
 		for (var i=0; i<teststrings.length; i++){
-			checkProbability(processintoArray(teststrings[i]), bigrams, unigrams);
-		}
-
-		console.log("________Let's try it Metaphoned!________");
-		var metaphonedText = metaphoneText(text);
-		makeBigrams(metaphonedText, "meta-bigrams.json");
-		makeUnigrams(metaphonedText, "meta-unigrams.json");
-		for (var i=0; i<teststrings.length; i++){
-			checkProbability(metaphoneText(processintoArray(teststrings[i])), bigrams, unigrams);
-		}
+			var text = processintoArray(teststrings[i]);
+			var score = calculateScore(text, bigrams, unigrams);
+			console.log("Text: "+text.join(" ")
+				+"\nscore: "+score
+				+"\n------------------")
+		}	
 	});
 }
+
 
 var teststrings = ["whether tis nobler in the mind to suffer the slings and arrows of outrageous fortune",
 	"whether tis nobler in the mend to sufer the slings and arrws of outrajs fortune",
@@ -229,5 +188,11 @@ var teststrings = ["whether tis nobler in the mind to suffer the slings and arro
 	"call me fellow"
 ]
 
-main();
+// ----------------------------------EXPORTS--------------------------------------------
+
+
+module.exports.makeUnigrams = makeUnigrams;
+module.exports.makeBigrams = makeBigrams;
+module.exports.calculateScore = calculateScore;
+
 

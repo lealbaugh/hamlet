@@ -1,5 +1,22 @@
 //----------METAPHONE------------------------------------
-var metaphone = function(word){
+var metaphone = function(text) {
+	if (typeof(text) === "string" || text instanceof String) {
+		return metaphoneWord(text);
+	}
+	else if (typeof(text) === "object") {
+		metaphonedText = [];
+		for (var i = 0; i<text.length; i++) {
+				metaphonedText[i] = metaphoneWord(text[i]);
+			}
+		return metaphonedText;
+	}
+	else {
+		console.warn("Unhandled type of text.");
+		return null;
+	}
+}
+
+var metaphoneWord = function(word) {
 // Drop duplicate adjacent letters, except for C.
 	// This is probably a typo, because the duplicate case we actually care about is "gg"
 	// So I'll disregard the 'c's and just switch the 'gg' over to 'k' at this stage.
