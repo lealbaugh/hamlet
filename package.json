@@ -1,0 +1,23 @@
+{
+  "name": "infinite-monkey-trainer",
+  "version": "0.0.0",
+  "description": "none",
+  "main": "server.js",
+  "dependencies": {
+    "node-dir": "~0.1.5",
+    "socket.io": "~0.9.16",
+    "express": "~3.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Lea",
+  "license": "None"
+}
+{
+  "engines": {
+    "node": "0.10.x"
+  }
+}
