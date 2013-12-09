@@ -104,7 +104,7 @@ function checkProbability(text, bigrams, unigrams) {
 			}
 			else if (current in unigrams) {
 				value += unigrams[current]+0.91629;
-				// "stupid backoff" is we multiply the (n-1)grams value by 0.4
+				// "stupid backoff" (Brants et al 2010) is we multiply the (n-1)grams value by 0.4
 				// aka add the neglog of 0.4, which is 0.91629
 			}
 			else {
@@ -118,8 +118,7 @@ function checkProbability(text, bigrams, unigrams) {
 	else if (text.length > 0) {
 		if (prev in unigrams) {
 			value += unigrams[prev]+0.91629;
-			// "stupid backoff" (Brants et al 2010) is we multiply the (n-1)grams value by 0.4
-			// aka add the neglog of 0.4, which is 0.91629
+			// "stupid backoff" again
 		}
 		else {
 			value += unigrams["LEAST_COMMON_PROB"]+2*0.91629;
@@ -127,7 +126,6 @@ function checkProbability(text, bigrams, unigrams) {
 		}
 	}
 	// otherwise, the value stays at 0, but then so does the text.length
-	
 	return value;
 }
 

@@ -8,6 +8,7 @@ function init() {
 	var textarea = document.createElement('textarea');
 	textarea.setAttribute("id", "textarea");
 	textarea.setAttribute("autofocus", "true");
+	textarea.setAttribute("spellcheck", "false");
 	// textarea.setAttribute("placeholder", "Type..");
 	document.querySelector('body').appendChild(textarea);
 
