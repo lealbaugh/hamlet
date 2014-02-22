@@ -21,7 +21,7 @@ body {
 	position: absolute;
 	left: (100% - $wrap-width)/2;
 	right: (100% - $wrap-width)/2;
-
+	width: $wrap-width;
 }
 
 #textarea {
